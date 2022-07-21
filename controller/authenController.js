@@ -31,7 +31,7 @@ exports.allUser = async (req, res, next) => {
   try {
     let result = await authen.findAll();
     res.json({
-      status: constants.kResultok,
+      status: constants.kResultOk,
       response: result,
     });
   } catch (error) {
