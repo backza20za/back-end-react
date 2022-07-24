@@ -2,7 +2,7 @@ module.exports = {
   HOST: "localhost",
   USER: "root",
   PASSWORD: "",
-  DB: "Back-End_fewfans",
+  DB: "DbName",
   dialect: "mysql",
   timezone: "asia/bangkok",
   pool: {
