@@ -4,30 +4,34 @@ const constants = require("../hooks/constant");
 const formidable = require("formidable");
 const path = require("path");
 const fs = require("fs-extra");
-const books = require("../models/book");
+const product = require("../models/product");
 const { json } = require("express/lib/response");
 const jwt = require("../hooks/jwt");
 
-uploadImageBooks = async (files, doc) => {
+uploadImage = async (files, doc) => {
+  console.log(JSON.stringify(files));
   if (files.image != null) {
     var fileExtention = files.image.originalFilename.split(".")[1];
-    image = `${doc}.${fileExtention}`;
-    var oldpath = __dirname;
-    var newpath = path.resolve(__dirname + "/../uploaded/book") + "/" + image;
+    doc.image = `${doc.id}.${fileExtention}`;
+    var newpath =
+      path.resolve(__dirname + "../../uploaded/book/") + "/" + doc.image;
     if (fs.existsSync(newpath)) {
       await fs.remove(newpath);
     }
     await fs.moveSync(files.image.filepath, newpath);
 
     // Update database
-    let result = books.update({ image: image }, { where: { id: doc } });
+    let result = product.update(
+      { image: doc.image },
+      { where: { id: doc.id } }
+    );
     return result;
   }
 };
 // findall
-exports.allBooks = async (req, res, next) => {
+exports.allEmployees = async (req, res, next) => {
   try {
-    let result = await books.findAll();
+    let result = await employees.findAll();
     res.json({
       status: constants.kResultOk,
       message: "ค้นหาข้อมูล สำเร็จ",
@@ -41,32 +45,26 @@ exports.allBooks = async (req, res, next) => {
     });
   }
 };
-exports.addBooks = async (req, res) => {
+exports.addProduct = async (req, res) => {
   try {
     const form = new formidable.IncomingForm();
     form.parse(req, async (error, fields, files) => {
-      let result = await books.create(fields);
-      result = await uploadImageBooks(files, result.id);
+      let result = await product.create(fields);
+      result = await uploadImage(files, result);
       res.json({
-        status: constants.kResultOk,
-        message: "เพิ่มข้อมูล สำเร็จ",
-        response: [],
+        result: constants.kResultOk,
+        message: files,
       });
     });
   } catch (error) {
-    res.json({
-      status: constants.kResultNok,
-      message: "CatchError",
-      response: [JSON.stringify(error)],
-    });
+    res.json({ result: constants.kResultNok, message: JSON.stringify(error) });
   }
 };
-exports.updateBooks = async (req, res) => {
+exports.updateEmployees = async (req, res) => {
   try {
     var form = new formidable.IncomingForm();
     form.parse(req, async (err, fields, files) => {
-      let result = await books.update(fields, { where: { id: fields.id } });
-      result = await uploadImageBooks(files, fields.id);
+      let result = await employees.update(fields, { where: { id: fields.id } });
       res.json({
         status: constants.kResultOk,
         message: "เพิ่มข้อมูล สำเร็จ",
@@ -81,14 +79,11 @@ exports.updateBooks = async (req, res) => {
     });
   }
 };
-exports.delBooks = async (req, res) => {
+exports.delEmployees = async (req, res) => {
   try {
     const { id } = req.params;
-    let result = await books.findOne({ where: { id: id } });
-    await fs.remove(
-      path.resolve(__dirname + "/../uploaded/book") + "/" + result.image
-    );
-    result = await books.destroy({ where: { id: id } });
+    let result = await employees.findOne({ where: { id: id } });
+    result = await employees.destroy({ where: { id: id } });
     res.json({
       result: constants.kResultOk,
       message: "ลบข้อมูล สำเร็จ",
@@ -104,12 +99,14 @@ exports.delBooks = async (req, res) => {
 };
 
 exports.getById = async (req, res) => {
-  let result = await books.findOne({ where: { id: req.params.id } });
+  let result = await employees.findOne({ where: { id: req.params.id } });
   if (result) {
+    let array = [];
+    array.push(result);
     res.json({
       status: constants.kResultOk,
       message: "ค้นหาสำเร็จ",
-      response: result,
+      response: array,
     });
   } else {
     res.json({

@@ -20,6 +20,7 @@ app.use("/", indexRouter);
 app.use("/users", usersRouter);
 
 app.use("/api/v2/authen/", require("./routes/api_authen"));
-app.use("/api/v2/books/", require("./routes/api_books"));
+app.use("/api/v2/employees/", require("./routes/api_employees"));
+app.use("/api/v2/product/", require("./routes/api_product"));
 
 module.exports = app;

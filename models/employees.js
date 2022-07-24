@@ -1,28 +1,27 @@
 const Sequelize = require("sequelize");
 const sequelize = require("../database/db_instance");
-const book = sequelize.define(
-  "book",
+const employees = sequelize.define(
+  "employees",
   {
     // attributes
     name: {
       type: Sequelize.STRING,
       allowNull: false,
     },
-    image: {
+    position: {
       type: Sequelize.STRING,
       allowNull: false,
-      defaultValue: "-",
     },
-    price: {
+    salary: {
       type: Sequelize.DECIMAL(10, 2),
-      // allowNull defaults to true
+      defaultValue: 0.0,
     },
   },
   {}
 );
 
 (async () => {
-  await book.sync({ force: false });
+  await employees.sync({ force: false });
 })();
 
-module.exports = book;
+module.exports = employees;
